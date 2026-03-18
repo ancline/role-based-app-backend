@@ -1,0 +1,52 @@
+
+
+body {
+    background-color: #f8f9fa;
+}
+
+.page {
+    display: none;
+}
+
+.page.active {
+    display: block;
+}
+
+.success-box {
+    background-color: #d1e7dd;
+    border: 1px solid #badbcc;
+    border-radius: 4px;
+    padding: 12px;
+    margin-bottom: 20px;
+}
+
+.success-box::before {
+    content: "✓ ";
+    color: #0f5132;
+    font-weight: bold;
+}
+
+.navbar-brand {
+    font-size: 1.1rem;
+}
+
+.card {
+    
+}
+
+
+.auth-card {
+    max-width: 520px;
+    margin: 0 auto;
+}
+
+
+.table td, .table th {
+    vertical-align: middle;
+}
+.table .btn {
+    padding: .25rem .45rem;
+    font-size: .8rem;
+}
+.actions-group > .btn { margin-right: .35rem; }
+.badge-verified { color: #fff; background-color: #198754; padding: .25rem .45rem; border-radius: .25rem; }

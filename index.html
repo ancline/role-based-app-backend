@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Full-Stack App</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" 
+          rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- Nav-->
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark px-4">
+    <div class="container-fluid">
+        <span class="navbar-brand fw-bold">Full-Stack App (Ancline April Seaborg)</span>
+        
+        
+        <div class="ms-auto" id="navButtons">
+            <button class="btn btn-outline-light me-2" onclick="navigateTo('#/login')">Login</button>
+            <button class="btn btn-warning" onclick="navigateTo('#/register')">Register</button>
+        </div>
+        
+        
+        <div class="ms-auto d-none" id="navUser">
+            <div class="dropdown">
+                <button class="btn btn-dark dropdown-toggle text-light" type="button" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                    Admin ▼
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                    <li><a class="dropdown-item" href="#/profile">Profile</a></li>
+                    <li id="navEmployeesLink" class="d-none"><a class="dropdown-item" href="#/employees">Employees</a></li>
+                    <li id="navAccountsLink" class="d-none"><a class="dropdown-item" href="#/accounts">Accounts</a></li>
+                    <li id="navDepartmentsLink" class="d-none"><a class="dropdown-item" href="#/departments">Departments</a></li>
+                    <li><a class="dropdown-item" href="#/requests">My Requests</a></li>
+                    <li><hr class="dropdown-divider"></li>
+                    <li><a class="dropdown-item text-danger" href="javascript:void(0)" onclick="logout()">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Landing page-->
+<div id="main" class="container mt-5 page active">
+    <h1 class="mb-3">Welcome to Full-Stack App</h1>
+    <h5 class="text-muted">A static prototype before backend integration. Simulates:</h5>
+    <ul class="mt-3">
+        <li>Email registration + fake verification</li>
+        <li>Login with JWT-like token simulation</li>
+        <li>Role-based UI (Admin/User)</li>
+        <li>CRUD for Employees, Departments, Requests</li>
+    </ul>
+    <div class="alert alert-info mt-3">
+        Note: All data is stored in localStorage. Refresh to reset.
+    </div>
+    <button class="btn btn-primary mt-3" onclick="navigateTo('#/login')">
+        Get Started →
+    </button>
+</div>
+
+<!-- Login -->
+<div id="login" class="container mt-5 page">
+    <h2 class="mb-4">Login</h2>
+    <div class="card p-4 shadow-sm auth-card">
+        <form onsubmit="handleLogin(event)">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="loginEmail" class="form-control" required>
+            </div>    
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" id="loginPassword" class="form-control" required>
+            </div>
+            <div id="loginError" class="alert alert-danger d-none"></div>
+            <button type="submit" class="btn btn-primary w-100">Login</button>
+            <button type="button" class="btn btn-link w-100 mt-2" onclick="navigateTo('#/register')">
+                Don't have an account? Register
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Register -->
+<div id="register" class="container mt-5 page">
+    <h2 class="mb-4">Register Account</h2>
+    <div class="card p-4 shadow-sm auth-card">
+        <form onsubmit="handleRegister(event)">
+            <div class="mb-3">
+                <label class="form-label">First Name</label>
+                <input type="text" id="regFirstName" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Last Name</label>
+                <input type="text" id="regLastName" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Email</label>    
+                <input type="email" id="regEmail" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">Password</label>    
+                <input type="password" id="regPassword" class="form-control" required minlength="6">
+            </div>
+            <div id="registerError" class="alert alert-danger d-none"></div>
+            <button type="submit" class="btn btn-primary w-100">Register</button>
+            <button type="button" class="btn btn-link w-100 mt-2" onclick="navigateTo('#/login')">
+                Already have an account? Login
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Verify Email -->
+<div id="verify" class="container mt-5 page">
+    <h2 class="mb-4">Verify Your Email</h2>
+    <div class="card p-4 shadow-sm auth-card">
+        <div class="success-box">
+            A verification link has been sent to <strong id="verifyEmailDisplay"></strong>
+        </div>
+        <p class="text-muted">For demo purposes, click below to simulate verification:</p>
+        <button class="btn btn-success w-100 mb-2" onclick="simulateVerification()">
+            Simulate Email Verification
+        </button>
+        <button class="btn btn-outline-secondary w-100" onclick="navigateTo('#/login')">
+            Go to Login
+        </button>
+    </div>
+</div>
+
+<!-- Email Verified -->
+<div id="verified" class="container mt-5 page">
+    <h2 class="mb-4">Full-Stack App</h2>
+    <div class="card p-4 shadow-sm auth-card">
+        <div class="success-box">
+            Email verified! You may now log in.
+        </div>
+        <h3 class="h5 mb-3">Login</h3>
+        <form onsubmit="handleLogin(event)">
+            <div class="mb-3">
+                <label class="form-label">Email</label>
+                <input type="email" id="verifiedEmail" class="form-control" required>
+            </div>    
+            <div class="mb-3">
+                <label class="form-label">Password</label>
+                <input type="password" id="verifiedPassword" class="form-control" required>
+            </div>
+            <div id="verifiedError" class="alert alert-danger d-none"></div>
+            <button type="submit" class="btn btn-primary me-2">Login</button>
+            <button type="button" class="btn btn-outline-secondary" onclick="navigateTo('#/')">Cancel</button>
+        </form>
+    </div>
+</div>
+
+<!-- Dashboard -->
+<div id="dashboard" class="container mt-5 page">
+    <h2 class="mb-4">Dashboard</h2>
+    <div class="card p-4 shadow-sm">
+        <div class="success-box">
+            Welcome back, <strong id="dashboardUserName"></strong>!
+        </div>
+        <p>You have successfully logged in to the Full-Stack App.</p>
+        <div class="mt-4">
+            <h5>Quick Links:</h5>
+            <ul id="dashboardLinks">
+                <li><a href="#/profile" class="text-decoration-none">My Profile</a></li>
+                <li><a href="#/requests" class="text-decoration-none">My Requests</a></li>
+            </ul>
+            <ul id="dashboardAdminLinks" class="d-none">
+                <li><a href="#/employees" class="text-decoration-none">Employees Management</a></li>
+                <li><a href="#/departments" class="text-decoration-none">Departments</a></li>
+                <li><a href="#/accounts" class="text-decoration-none">Accounts</a></li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<!-- Profile -->
+<div id="profile" class="container mt-5 page">
+    <h2 class="mb-4">My Profile</h2>
+    <div class="card p-4 shadow-sm auth-card">
+        <h5 class="mb-3" id="profileUserName"></h5>
+        <div class="mb-2">
+            <strong>Email:</strong> <span id="profileEmail"></span>
+        </div>
+        <div class="mb-2">
+            <strong>Role:</strong> <span id="profileRole"></span>
+        </div>
+        <div class="mt-4">
+            <button class="btn btn-outline-primary btn-sm" onclick="showEditProfileModal()">Edit Profile</button>
+        </div>
+    </div>
+</div>
+
+<!-- Employees -->
+<div id="employees" class="container-fluid mt-4 page">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0">Employees</h5>
+            <button class="btn btn-success btn-sm" onclick="showAddEmployeeModal()">+ Add Employee</button>
+        </div>
+        <div class="card-body">
+            <div id="employeesTableContainer">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Position</th>
+                            <th>Dept</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeesTableBody">
+                        <tr>
+                            <td colspan="5" class="text-center text-muted py-4">No employees.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Departments -->
+<div id="departments" class="container-fluid mt-4 page">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0">Departments</h5>
+            <button class="btn btn-success btn-sm" onclick="showAddDepartmentModal()">+ Add Department</button>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="departmentsTableBody">
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">No departments.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Accounts -->
+<div id="accounts" class="container-fluid mt-4 page">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0">Accounts</h5>
+            <button class="btn btn-success btn-sm" onclick="showAddAccountModal()">+ Add Account</button>
+        </div>
+        <div class="card-body">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Verified</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="accountsTableBody">
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">No accounts.</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Requests -->
+<div id="requests" class="container-fluid mt-4 page">
+    <div class="card shadow-sm">
+        <div class="card-header bg-white d-flex justify-content-between align-items-center py-3">
+            <h5 class="mb-0">My Requests</h5>
+            <button class="btn btn-success btn-sm" onclick="showNewRequestModal()">+ New Request</button>
+        </div>
+        <div class="card-body">
+            <div id="requestsEmptyState" class="text-center py-5">
+                <p class="text-muted">You have no requests yet.</p>
+                <button class="btn btn-success" onclick="showNewRequestModal()">Create One</button>
+            </div>
+            <table class="table table-hover d-none" id="requestsTable">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Type</th>
+                        <th>Items</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="requestsTableBody">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Add Employee -->
+<div class="modal fade" id="addEmployeeModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add/Edit Employee</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="employeeForm" onsubmit="saveEmployee(event)">
+                    <input type="hidden" id="employeeId">
+                    <div class="mb-3">
+                        <label class="form-label">Employee ID</label>
+                        <input type="text" class="form-control" id="employeeIdInput" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">User Email</label>
+                        <input type="email" class="form-control" id="employeeEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Position</label>
+                        <input type="text" class="form-control" id="employeePosition" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Department</label>
+                        <select class="form-select" id="employeeDepartment" required>
+                            <option value="">Select Department</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Hire Date</label>
+                        <input type="date" class="form-control" id="employeeHireDate" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Department -->
+<div class="modal fade" id="addDepartmentModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add/Edit Department</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="departmentForm" onsubmit="saveDepartment(event)">
+                    <input type="hidden" id="departmentId">
+                    <div class="mb-3">
+                        <label class="form-label">Name</label>
+                        <input type="text" class="form-control" id="departmentName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Description</label>
+                        <input type="text" class="form-control" id="departmentDescription" required>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Account -->
+<div class="modal fade" id="addAccountModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Add/Edit Account</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="accountForm" onsubmit="saveAccount(event)">
+                    <input type="hidden" id="accountIndex">
+                    <div class="mb-3">
+                        <label class="form-label">First Name</label>
+                        <input type="text" class="form-control" id="accountFirstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" class="form-control" id="accountLastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" id="accountEmail" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" class="form-control" id="accountPassword" minlength="6">
+                        <small class="text-muted">Leave blank to keep current password</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Role</label>
+                        <select class="form-select" id="accountRole" required>
+                            <option value="User">User</option>
+                            <option value="Admin">Admin</option>
+                        </select>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="accountVerified">
+                        <label class="form-check-label" for="accountVerified">Verified</label>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Save</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- New Request -->
+<div class="modal fade" id="newRequestModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">New Request</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form id="requestForm" onsubmit="saveRequest(event)">
+                    <div class="mb-3">
+                        <label class="form-label">Type</label>
+                        <select class="form-select" id="requestType" required>
+                            <option value="Equipment">Equipment</option>
+                            <option value="Leave">Leave</option>
+                            <option value="Reimbursement">Reimbursement</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Items</label>
+                        <div id="requestItemsList">
+                            <div class="input-group mb-2">
+                                <input type="text" class="form-control" placeholder="Item name" required>
+                                <input type="number" class="form-control" style="max-width: 80px;" value="1" min="1">
+                                <button type="button" class="btn btn-outline-danger" onclick="removeRequestItem(this)">×</button>
+                            </div>
+                        </div>
+                        <button type="button" class="btn btn-outline-secondary btn-sm" onclick="addRequestItem()">+ Add Item</button>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit Request</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="script.js"></script>
+
+</body>
+</html>
