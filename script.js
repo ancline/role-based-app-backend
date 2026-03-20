@@ -211,26 +211,32 @@ async function loadAdminDashboard() {
 // ─── LOGIN ───────────────────────────────────────────────────────────────────
 
 async function login(username, password) {
-  try {
-    const response = await fetch('http://localhost:3000/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
+    let response;
+    try {
+        response = await fetch('http://localhost:3000/api/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username, password })
+        });
+    } catch (err) {
+        // Only real network failures (offline, CORS, DNS) reach here
+        alert('Network error');
+        throw err;
+    }
 
     const data = await response.json();
 
     if (response.ok) {
-      // Save token in memory (or sessionStorage for page refresh)
-      sessionStorage.setItem('authToken', data.token);
-      showDashboard(data.user);
+        // Save token in memory (or sessionStorage for page refresh)
+        sessionStorage.setItem('authToken', data.token);
+        setAuthState(true, data.user);
     } else {
-      alert('Login failed: ' + data.error);
-    }
-  } catch (err) {
-    alert('Network error');
-  }
+        alert('Login failed: ' + data.error);
+    } 
+
+   
 }
+
 async function handleLogin(event) {
     event.preventDefault();
 
